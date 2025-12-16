@@ -1,0 +1,186 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}Все концерты - Encore{% endblock %}
+{% block page_title %}Все концерты{% endblock %}
+{% block page_subtitle %}Полный архив музыкальных выступлений{% endblock %}
+
+{% block concerts_content %}
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title mb-3">
+            <i class="bi bi-funnel"></i> Поиск и фильтрация
+        </h5>
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label">По названию</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           placeholder="Введите название концерта" value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="from_date" class="form-label">С даты</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                    <input type="date" class="form-control" id="from_date" name="from_date" 
+                           value="{{ request.GET.from_date }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="to_date" class="form-label">По дату</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                    <input type="date" class="form-control" id="to_date" name="to_date" 
+                           value="{{ request.GET.to_date }}">
+                </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <div class="d-grid gap-2 w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-filter"></i> Применить
+                    </button>
+                </div>
+            </div>
+            <div class="col-12">
+                {% if search_query or request.GET.from_date or request.GET.to_date %}
+                <a href="{% url 'concertsshower:all_concerts' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-x-circle"></i> Сбросить фильтры
+                </a>
+                <span class="ms-3 text-muted small">
+                    <i class="bi bi-info-circle"></i> Применены фильтры
+                </span>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Список концертов -->
+{% if concerts %}
+    <div class="row mb-3">
+        <div class="col">
+            <div class="alert alert-light">
+                <i class="bi bi-info-circle"></i>
+                Найдено: <strong>{{ concerts|length }}</strong> концертов
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for concert in concerts %}
+        <div class="col">
+            <div class="card concert-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">
+                            <a href="{% url 'concertsshower:concert_detail' concert.concert_id %}" 
+                               class="text-decoration-none text-dark">
+                                {{ concert.concert_title }}
+                            </a>
+                        </h5>
+                        <span class="badge {% if concert.concert_date > now %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if concert.concert_date > now %}Предстоящий{% else %}Прошедший{% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="concert-date mb-3">
+                        <i class="bi bi-calendar-event text-primary"></i>
+                        <strong>{{ concert.concert_date|date:"d.m.Y" }}</strong>
+                        <i class="bi bi-clock text-primary ms-2"></i>
+                        {{ concert.concert_date|time:"H:i" }}
+                    </div>
+                    
+                    <div class="concert-venue mb-3">
+                        <i class="bi bi-geo-alt text-secondary"></i>
+                        <span class="text-muted">{{ concert.venue_address }}</span>
+                    </div>
+                    
+                    <div class="concert-status mt-3 pt-3 border-top">
+                        <div class="row">
+                            <div class="col">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock-history"></i>
+                                    {% if concert.concert_date > now %}
+                                        Через {{ concert.concert_date|timeuntil }}
+                                    {% else %}
+                                        {{ concert.concert_date|timesince }} назад
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'concertsshower:concert_detail' concert.concert_id %}" 
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye"></i> Подробнее
+                        </a>
+                        {% if concert.concert_date > now %}
+                        <span class="badge bg-warning text-dark">
+                            <i class="bi bi-ticket-perforated"></i> Билеты
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-calendar-x display-1 text-muted"></i>
+        <h3 class="text-muted mt-3">Концерты не найдены</h3>
+        <p class="text-muted">
+            {% if search_query or request.GET.from_date or request.GET.to_date %}
+                По вашему запросу ничего не найдено. Попробуйте изменить параметры поиска.
+            {% else %}
+                В системе пока нет концертов.
+            {% endif %}
+        </p>
+        {% if search_query or request.GET.from_date or request.GET.to_date %}
+        <a href="{% url 'concertsshower:all_concerts' %}" class="btn btn-primary mt-2">
+            <i class="bi bi-arrow-counterclockwise"></i> Показать все концерты
+        </a>
+        {% endif %}
+    </div>
+{% endif %}
+
+<!-- Кнопки навигации -->
+<div class="mt-5 pt-4 border-top">
+    <div class="d-flex justify-content-between">
+        <a href="{% url 'concertsshower:upcoming_concerts' %}" class="btn btn-outline-primary">
+            <i class="bi bi-calendar-event"></i> Ближайшие концерты
+        </a>
+        <a href="{% url 'book' %}" class="btn btn-outline-success">
+            <i class="bi bi-calendar-plus"></i> Бронирование репетиций
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Автоматически устанавливаем максимальную дату для "С даты" 
+    // и минимальную для "По дату" если они обе заполнены
+    document.addEventListener('DOMContentLoaded', function() {
+        const fromDateInput = document.getElementById('from_date');
+        const toDateInput = document.getElementById('to_date');
+        
+        if (fromDateInput && toDateInput) {
+            fromDateInput.addEventListener('change', function() {
+                if (this.value) {
+                    toDateInput.min = this.value;
+                }
+            });
+            
+            toDateInput.addEventListener('change', function() {
+                if (this.value) {
+                    fromDateInput.max = this.value;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
