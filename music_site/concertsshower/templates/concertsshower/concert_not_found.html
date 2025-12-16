@@ -1,0 +1,9 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}Концерт не найден{% endblock %}
+
+{% block content %}
+<h1>Концерт не найден</h1>
+<p>Запрошенный концерт не существует или был удален.</p>
+<a href="{% url 'concertsshower:upcoming_concerts' %}">Вернуться к списку концертов</a>
+{% endblock %}

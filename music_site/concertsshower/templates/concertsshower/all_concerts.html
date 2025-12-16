@@ -1,0 +1,40 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}Все концерты{% endblock %}
+
+{% block content %}
+<h1>Все концерты</h1>
+
+<div class="search-form">
+    <form method="get">
+        <input type="text" name="search" placeholder="Поиск по названию" value="{{ search_query }}">
+        <input type="date" name="from_date" placeholder="С даты">
+        <input type="date" name="to_date" placeholder="По дату">
+        <button type="submit">Фильтровать</button>
+        <a href="{% url 'concertsshower:all_concerts' %}">Сбросить</a>
+    </form>
+</div>
+
+{% if concerts %}
+    <div class="concert-list">
+        {% for concert in concerts %}
+        <div class="concert-card">
+            <h3>
+                <a href="{% url 'concertsshower:concert_detail' concert.concert_id %}">
+                    {{ concert.concert_title }}
+                </a>
+            </h3>
+            <div class="concert-date">
+                📅 {{ concert.concert_date|date:"d.m.Y" }}
+                ⏰ {{ concert.concert_date|time:"H:i" }}
+            </div>
+            <div class="concert-venue">
+                📍 {{ concert.venue_address }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>Концертов не найдено.</p>
+{% endif %}
+{% endblock %}
