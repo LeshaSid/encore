@@ -18,7 +18,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core.apps.CoreConfig',  # Правильный путь к конфигурации
+    'core.apps.CoreConfig',  
+    'booking.apps.BookingConfig'
 ]
 
 MIDDLEWARE = [

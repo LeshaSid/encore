@@ -1,0 +1,100 @@
+{% extends "booking/templatePage.html" %}
+
+{% block title %}
+Бронь репетиции
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Бронирование репетиции</h1>
+    
+    <!-- Отображение сообщений -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Забронировать репетицию</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_band_id" class="form-label">ID группы</label>
+                            {{ form.band_id }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_rehearsal_date" class="form-label">Дата и время</label>
+                            {{ form.rehearsal_date }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_duration_minutes" class="form-label">Длительность (минуты)</label>
+                            {{ form.duration_minutes }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_location" class="form-label">Место</label>
+                            {{ form.location }}
+                        </div>
+                        
+                        {% if error %}
+                            <div class="alert alert-danger">
+                                {{ error }}
+                            </div>
+                        {% endif %}
+                        
+                        <button type="submit" class="btn btn-primary">Забронировать</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Забронированные репетиции</h5>
+                </div>
+                <div class="card-body">
+                    {% if rehearsals %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>ID группы</th>
+                                        <th>Дата и время</th>
+                                        <th>Длительность</th>
+                                        <th>Место</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for rehearsal in rehearsals %}
+                                        <tr>
+                                            <td>{{ rehearsal.rehearsal_id }}</td>
+                                            <td>{{ rehearsal.band_id }}</td>
+                                            <td>{{ rehearsal.rehearsal_date }}</td>
+                                            <td>{{ rehearsal.duration_minutes }} мин.</td>
+                                            <td>{{ rehearsal.location }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Нет забронированных репетиций</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
