@@ -99,7 +99,7 @@
                                     {% for rehearsal in rehearsals %}
                                         <tr>
                                             <td><span class="badge bg-secondary">{{ rehearsal.rehearsal_id }}</span></td>
-                                            <td><span class="badge bg-info">{{ rehearsal.band_id }}</span></td>
+                                            <td><span class="badge bg-info">{{ rehearsal.band.band_id }}</span></td>
                                             <td>{{ rehearsal.rehearsal_date|date:"d.m.Y H:i" }}</td>
                                             <td>
                                                 <span class="badge bg-warning text-dark">

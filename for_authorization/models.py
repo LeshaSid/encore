@@ -1,5 +1,4 @@
-# core/models.py - ЗАМЕНИТЕ ВЕСЬ ФАЙЛ на этот код:
-
+# for_authorization/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils.translation import gettext_lazy as _

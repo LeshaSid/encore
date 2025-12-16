@@ -16,8 +16,28 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core.apps.CoreConfig',  
     'booking.apps.BookingConfig',
-    'concertsshower.apps.ConcertsshowerConfig'
+    'concertsshower.apps.ConcertsshowerConfig',
+    'for_authorization.apps.ForAuthorizationConfig'
 ]
+
+AUTH_USER_MODEL = 'for_authorization.MusicianUser'
+
+TEMPLATES = [
+    {
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -34,7 +54,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # Важно: для общего base.html
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -52,7 +72,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'concerts_and_rehearsals',
+        'NAME': 'concerts_db',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'db',

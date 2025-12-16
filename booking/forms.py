@@ -1,14 +1,14 @@
-from .models import Rehearsals
+from core.models import Rehearsal
 from django.forms import ModelForm, TextInput, DateTimeInput, NumberInput
 
 
 class RehearsalsForm(ModelForm):
     class Meta():
-        model = Rehearsals
-        fields = ["band_id", "rehearsal_date", "duration_minutes", "location"]
+        model = Rehearsal
+        fields = ["band", "rehearsal_date", "duration_minutes", "location"]
 
         widgets = {            
-            "band_id": NumberInput(attrs={
+            "band": NumberInput(attrs={
                 "class": "form-control",
                 "placeholder": "Enter band id"
             }), 
