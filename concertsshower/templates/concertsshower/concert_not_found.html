@@ -1,0 +1,85 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}Концерт не найден - Encore{% endblock %}
+{% block page_title %}Концерт не найден{% endblock %}
+{% block page_subtitle %}Запрашиваемая страница концерта недоступна{% endblock %}
+
+{% block concerts_content %}
+<div class="text-center py-5">
+    <div class="mb-4">
+        <i class="bi bi-emoji-frown display-1 text-danger"></i>
+        <i class="bi bi-music-note-beamed display-1 text-muted ms-3"></i>
+        <i class="bi bi-emoji-frown display-1 text-danger ms-3"></i>
+    </div>
+    
+    <h1 class="display-4 text-danger mb-4">404</h1>
+    <h2 class="mb-4">Концерт не найден</h2>
+    
+    <div class="alert alert-warning mx-auto" style="max-width: 600px;">
+        <i class="bi bi-exclamation-triangle"></i>
+        <strong>Возможные причины:</strong>
+        <ul class="mt-2 mb-0">
+            <li>Концерт был удален или перенесен</li>
+            <li>Ссылка устарела или содержит ошибку</li>
+            <li>Концерт временно недоступен</li>
+        </ul>
+    </div>
+    
+    <p class="lead mb-5">
+        Запрашиваемый вами концерт не существует, был удален<br>
+        или вы перешли по неверной ссылке.
+    </p>
+    
+    <div class="row justify-content-center g-3">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-calendar-event display-4 text-primary mb-3"></i>
+                    <h5 class="card-title">Ближайшие концерты</h5>
+                    <p class="card-text">Посмотрите запланированные выступления</p>
+                    <a href="{% url 'concertsshower:upcoming_concerts' %}" class="btn btn-primary">
+                        <i class="bi bi-arrow-right"></i> Перейти
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-calendar3 display-4 text-success mb-3"></i>
+                    <h5 class="card-title">Все концерты</h5>
+                    <p class="card-text">Полный архив музыкальных событий</p>
+                    <a href="{% url 'concertsshower:all_concerts' %}" class="btn btn-success">
+                        <i class="bi bi-arrow-right"></i> Перейти
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-calendar-plus display-4 text-info mb-3"></i>
+                    <h5 class="card-title">Бронирование</h5>
+                    <p class="card-text">Забронируйте репетицию для группы</p>
+                    <a href="{% url 'book' %}" class="btn btn-info text-white">
+                        <i class="bi bi-arrow-right"></i> Перейти
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-5 pt-4">
+        <p class="text-muted">
+            <i class="bi bi-info-circle"></i>
+            Если вы уверены, что концерт должен быть доступен,<br>
+            свяжитесь с администратором системы.
+        </p>
+        <a href="/admin/" class="btn btn-outline-secondary">
+            <i class="bi bi-gear"></i> Администрирование
+        </a>
+    </div>
+</div>
+{% endblock %}

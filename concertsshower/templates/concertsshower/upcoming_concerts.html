@@ -1,0 +1,77 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}Ближайшие концерты - Encore{% endblock %}
+{% block page_title %}Ближайшие концерты{% endblock %}
+{% block page_subtitle %}Запланированные выступления на ближайшее время{% endblock %}
+
+{% block concerts_content %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i>
+    Текущее время: <strong>{{ current_time|date:"d.m.Y H:i" }}</strong>
+</div>
+
+{% if concerts_with_bands %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for item in concerts_with_bands %}
+        <div class="col">
+            <div class="card concert-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'concertsshower:concert_detail' item.concert.concert_id %}" 
+                           class="text-decoration-none text-dark">
+                            {{ item.concert.concert_title }}
+                        </a>
+                    </h5>
+                    
+                    <div class="concert-date mb-2">
+                        <i class="bi bi-calendar-event text-primary"></i>
+                        <strong>{{ item.concert.concert_date|date:"d.m.Y" }}</strong>
+                        <i class="bi bi-clock text-primary ms-3"></i>
+                        {{ item.concert.concert_date|time:"H:i" }}
+                    </div>
+                    
+                    <div class="concert-venue mb-3">
+                        <i class="bi bi-geo-alt text-secondary"></i>
+                        <span class="text-muted">{{ item.concert.venue_address|truncatechars:40 }}</span>
+                    </div>
+                    
+                    {% if item.bands %}
+                    <div class="bands-list mt-3 pt-3 border-top">
+                        <h6 class="text-muted small">
+                            <i class="bi bi-people"></i> Участники ({{ item.performance_count }})
+                        </h6>
+                        <div class="mt-2">
+                            {% for band in item.bands|slice:":3" %}
+                            <span class="badge bg-light text-dark border">{{ band.band_name }}</span>
+                            {% endfor %}
+                            {% if item.bands|length > 3 %}
+                            <span class="badge bg-secondary">+{{ item.bands|length|add:"-3" }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <a href="{% url 'concertsshower:concert_detail' item.concert.concert_id %}" 
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-eye"></i> Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-calendar-x display-1 text-muted"></i>
+        <h3 class="text-muted mt-3">Концертов не запланировано</h3>
+        <p class="text-muted">На ближайшее время нет запланированных выступлений</p>
+    </div>
+{% endif %}
+
+<div class="mt-4 text-center">
+    <a href="{% url 'concertsshower:all_concerts' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-calendar3"></i> Показать все концерты
+    </a>
+</div>
+{% endblock %}
