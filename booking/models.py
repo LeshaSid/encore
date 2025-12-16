@@ -1,10 +1,13 @@
+# booking/models.py
 from django.db import models
 
 
 class Rehearsals(models.Model):
+    # Используем те же имена полей, что и в core/models.py
+    rehearsal_id = models.AutoField(primary_key=True, db_column='rehearsal_id')
     band_id = models.IntegerField("band id")
     rehearsal_date = models.DateTimeField("Date & time")
-    duration = models.IntegerField("Duration")
+    duration_minutes = models.IntegerField("Duration minutes")  # Изменено на duration_minutes
     location = models.CharField("Location", max_length=255)
 
     class Meta():
@@ -12,12 +15,13 @@ class Rehearsals(models.Model):
         managed = False
 
     def __str__(self):
-        return self.rehearsal_date.__str__()
+        return f"Rehearsal {self.rehearsal_id} on {self.rehearsal_date}"
     
 
 class Bands(models.Model):
+    band_id = models.AutoField(primary_key=True, db_column='band_id')
     band_name = models.CharField("Band name", max_length=100)
-    genre = models.CharField("Duration", max_length=50)
+    genre = models.CharField("Genre", max_length=50)  # Исправлено
     founded_date = models.DateTimeField("Founded")
 
     class Meta():
@@ -29,6 +33,7 @@ class Bands(models.Model):
     
 
 class Band_membership(models.Model):
+    id = models.BigAutoField(primary_key=True)
     band_id = models.IntegerField("Band id")
     musician_id = models.IntegerField("Musician id")
     join_date = models.DateTimeField("Joined")
@@ -38,10 +43,11 @@ class Band_membership(models.Model):
         managed = False
 
     def __str__(self):
-        return self.band_id
+        return f"Membership {self.id}"
     
 
 class Musicians(models.Model):
+    musician_id = models.AutoField(primary_key=True, db_column='musician_id')
     first_name = models.CharField("First name", max_length=50)
     last_name = models.CharField("Last name", max_length=50)
     phone = models.CharField("Phone", max_length=20)
@@ -57,6 +63,7 @@ class Musicians(models.Model):
 
 
 class Performances(models.Model):
+    performance_id = models.AutoField(primary_key=True, db_column='performance_id')
     band_id = models.IntegerField("Band id")
     concert_id = models.IntegerField("Concert id")
     performance_order = models.IntegerField("Performance order")
@@ -66,10 +73,11 @@ class Performances(models.Model):
         managed = False
 
     def __str__(self):
-        return self.band_id
-
+        return f"Performance {self.performance_id}"
+    
 
 class Concerts(models.Model):
+    concert_id = models.AutoField(primary_key=True, db_column='concert_id')
     concert_title = models.CharField("Title", max_length=200)
     venue_address = models.CharField("Address", max_length=255)
     concert_date = models.DateTimeField("Date")
