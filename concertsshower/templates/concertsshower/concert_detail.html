@@ -1,0 +1,273 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}{{ concert.concert_title }} - Encore{% endblock %}
+{% block page_title %}{{ concert.concert_title }}{% endblock %}
+{% block page_subtitle %}Детальная информация о концерте{% endblock %}
+
+{% block concerts_content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <i class="bi bi-calendar-event display-6 text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Дата и время</h5>
+                                <p class="fs-5 mb-0">
+                                    <strong>{{ concert.concert_date|date:"d.m.Y" }}</strong>
+                                    <br>
+                                    <span class="text-muted">{{ concert.concert_date|time:"H:i" }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <i class="bi bi-geo-alt display-6 text-success"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Место проведения</h5>
+                                <p class="fs-6 mb-0">
+                                    {{ concert.venue_address }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="alert {% if concert.concert_date > now %}alert-success{% else %}alert-secondary{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi {% if concert.concert_date > now %}bi-clock{% else %}bi-check-circle{% endif %}"></i>
+                                    <strong>
+                                        {% if concert.concert_date > now %}
+                                            Концерт состоится через {{ concert.concert_date|timeuntil }}
+                                        {% else %}
+                                            Концерт прошел {{ concert.concert_date|timesince }} назад
+                                        {% endif %}
+                                    </strong>
+                                </div>
+                                <span class="badge {% if concert.concert_date > now %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {% if concert.concert_date > now %}Предстоящий{% else %}Завершен{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-music-note-beamed"></i> Программа выступлений
+                    {% if performances %}
+                    <span class="badge bg-primary ms-2">{{ performances|length }}</span>
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if performances %}
+                    <div class="list-group">
+                        {% for performance in performances %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                <div class="me-3">
+                                    <span class="badge bg-primary rounded-circle p-2">
+                                        {{ performance.performance_order }}
+                                    </span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ performance.band.band_name }}</h6>
+                                    {% if performance.band.genre %}
+                                    <p class="mb-1 text-muted">
+                                        <i class="bi bi-tag"></i> {{ performance.band.genre }}
+                                    </p>
+                                    {% endif %}
+                                    {% if performance.band.founded_date %}
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i> Основана в {{ performance.band.founded_date|date:"Y" }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <button class="btn btn-sm btn-outline-info" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#bandDetails{{ performance.band.band_id }}"
+                                            aria-expanded="false">
+                                        <i class="bi bi-info-circle"></i> Подробнее
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="collapse mt-3" id="bandDetails{{ performance.band.band_id }}">
+                                <div class="card card-body">
+                                    <h6>Информация о группе:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Название:</strong> {{ performance.band.band_name }}</li>
+                                        {% if performance.band.genre %}
+                                        <li><strong>Жанр:</strong> {{ performance.band.genre }}</li>
+                                        {% endif %}
+                                        {% if performance.band.founded_date %}
+                                        <li><strong>Основана:</strong> {{ performance.band.founded_date|date:"d.m.Y" }}</li>
+                                        {% endif %}
+                                    </ul>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i> Порядок выступления: {{ performance.performance_order }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-music-note-list display-1 text-muted"></i>
+                        <h5 class="text-muted mt-3">Программа выступлений не определена</h5>
+                        <p class="text-muted">Информация о выступлениях будет добавлена позже</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Информация</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6><i class="bi bi-calendar3"></i> Статус концерта</h6>
+                    <div class="alert {% if concert.concert_date > now %}alert-warning{% else %}alert-light{% endif %}">
+                        {% if concert.concert_date > now %}
+                            <i class="bi bi-clock"></i> <strong>Предстоящий</strong>
+                            <p class="mb-0 small mt-1">
+                                Начало: <strong>{{ concert.concert_date|date:"d.m.Y H:i" }}</strong>
+                            </p>
+                        {% else %}
+                            <i class="bi bi-check-circle"></i> <strong>Завершен</strong>
+                            <p class="mb-0 small mt-1">
+                                Прошел: {{ concert.concert_date|date:"d.m.Y" }}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <h6><i class="bi bi-graph-up"></i> Статистика</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-people text-primary"></i>
+                            Количество групп: 
+                            <span class="badge bg-primary float-end">{{ performances|length }}</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-clock text-success"></i>
+                            Дата проведения: 
+                            <span class="badge bg-light text-dark float-end">{{ concert.concert_date|date:"d.m.Y" }}</span>
+                        </li>
+                        {% if concert.concert_date > now %}
+                        <li class="mb-2">
+                            <i class="bi bi-hourglass text-warning"></i>
+                            До начала: 
+                            <span class="badge bg-warning text-dark float-end">{{ concert.concert_date|timeuntil }}</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                {% if concert.concert_date > now %}
+                <div class="mt-4">
+                    <h6><i class="bi bi-ticket-perforated"></i> Билеты</h6>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        Билеты доступны в кассах и онлайн
+                        <div class="mt-2">
+                            <button class="btn btn-success btn-sm w-100">
+                                <i class="bi bi-cart"></i> Купить билет
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-lightning"></i> Быстрые действия</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'concertsshower:upcoming_concerts' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left"></i> Назад к концертам
+                    </a>
+                    <a href="{% url 'concertsshower:all_concerts' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-calendar3"></i> Все концерты
+                    </a>
+                    <a href="{% url 'book' %}" class="btn btn-outline-success">
+                        <i class="bi bi-calendar-plus"></i> Забронировать репетицию
+                    </a>
+                    <button class="btn btn-outline-info" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Распечатать
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0"><i class="bi bi-map"></i> Место проведения</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h6>{{ concert.venue_address }}</h6>
+                <p class="text-muted">
+                    <i class="bi bi-geo-alt"></i> Адрес для навигации
+                </p>
+                <div class="alert alert-light">
+                    <i class="bi bi-info-circle"></i>
+                    Для получения точных координатов и схемы проезда обратитесь к организаторам.
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <i class="bi bi-map display-1 text-muted"></i>
+                    <p class="mt-2">
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-geo-alt"></i> Открыть в картах
+                        </button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstBandDetails = document.querySelector('[data-bs-target^="#bandDetails"]');
+        if (firstBandDetails) {
+            setTimeout(() => {
+                const firstCollapse = document.getElementById(firstBandDetails.getAttribute('data-bs-target').substring(1));
+                if (firstCollapse) {
+                    new bootstrap.Collapse(firstCollapse, { toggle: true });
+                }
+            }, 500);
+        }
+    });
+</script>
+{% endblock %}

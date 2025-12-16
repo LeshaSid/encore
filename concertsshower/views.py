@@ -1,15 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
-from django.db.models import Prefetch
-from .models import Concert, Performance, Band
+from core.models import Concert, Performance, Band
+
 
 def upcoming_concerts(request):
     now = timezone.now()
     
-
     concerts = Concert.objects.filter(
         concert_date__gte=now
-    ).order_by('concert_date')[:10]  
+    ).order_by('concert_date')[:10]
     
     concerts_with_bands = []
     for concert in concerts:
@@ -24,29 +23,30 @@ def upcoming_concerts(request):
     context = {
         'concerts_with_bands': concerts_with_bands,
         'current_time': now,
+        'now': now,
     }
     
     return render(request, 'concertsshower/upcoming_concerts.html', context)
 
 
 def concert_detail(request, concert_id):
-    try:
-        concert = Concert.objects.get(concert_id=concert_id)
-        performances = Performance.objects.filter(
-            concert=concert
-        ).select_related('band').order_by('performance_order')
-        
-        context = {
-            'concert': concert,
-            'performances': performances,
-        }
-        
-        return render(request, 'concertsshower/concert_detail.html', context)
-    except Concert.DoesNotExist:
-        return render(request, 'concertsshower/concert_not_found.html', status=404)
+    now = timezone.now()
+    concert = get_object_or_404(Concert, concert_id=concert_id)
+    performances = Performance.objects.filter(
+        concert=concert
+    ).select_related('band').order_by('performance_order')
+    
+    context = {
+        'concert': concert,
+        'performances': performances,
+        'now': now,
+    }
+    
+    return render(request, 'concertsshower/concert_detail.html', context)
 
 
 def all_concerts(request):
+    now = timezone.now()
     from_date = request.GET.get('from_date')
     to_date = request.GET.get('to_date')
     search_query = request.GET.get('search', '')
@@ -65,6 +65,7 @@ def all_concerts(request):
     context = {
         'concerts': concerts,
         'search_query': search_query,
+        'now': now,
     }
     
     return render(request, 'concertsshower/all_concerts.html', context)

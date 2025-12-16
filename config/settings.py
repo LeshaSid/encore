@@ -1,7 +1,3 @@
-"""
-Django settings for config project.
-"""
-
 import os
 from pathlib import Path
 
@@ -19,7 +15,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core.apps.CoreConfig',  
-    'booking.apps.BookingConfig'
+    'booking.apps.BookingConfig',
+    'concertsshower.apps.ConcertsshowerConfig'
 ]
 
 MIDDLEWARE = [
@@ -37,7 +34,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
