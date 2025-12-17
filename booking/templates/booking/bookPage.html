@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}
+Бронь репетиции - Encore
+{% endblock %}
+
+{% block content %}
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold text-primary">
+                <i class="bi bi-calendar-plus"></i> Бронирование репетиций
+            </h1>
+            <p class="lead">Забронируйте репетицию для вашей музыкальной группы</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card border-primary shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-plus-circle"></i> Новая репетиция
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_band_id" class="form-label fw-bold">
+                                <i class="bi bi-people"></i> ID группы
+                            </label>
+                            {{ form.band_id }}
+                            <div class="form-text">Введите идентификатор музыкальной группы</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_rehearsal_date" class="form-label fw-bold">
+                                <i class="bi bi-clock"></i> Дата и время
+                            </label>
+                            {{ form.rehearsal_date }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_duration_minutes" class="form-label fw-bold">
+                                <i class="bi bi-stopwatch"></i> Длительность (минуты)
+                            </label>
+                            {{ form.duration_minutes }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_location" class="form-label fw-bold">
+                                <i class="bi bi-geo-alt"></i> Место проведения
+                            </label>
+                            {{ form.location }}
+                            <div class="form-text">Адрес или название помещения</div>
+                        </div>
+                        
+                        {% if error %}
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                {{ error }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Забронировать
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mt-4 mt-lg-0">
+            <div class="card border-success shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check"></i> Забронированные репетиции
+                        <span class="badge bg-light text-dark ms-2">{{ rehearsals|length }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if rehearsals %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Группа</th>
+                                        <th>Дата и время</th>
+                                        <th>Длительность</th>
+                                        <th>Место</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for rehearsal in rehearsals %}
+                                        <tr>
+                                            <td><span class="badge bg-secondary">{{ rehearsal.rehearsal_id }}</span></td>
+                                            <td><span class="badge bg-info">{{ rehearsal.band.band_id }}</span></td>
+                                            <td>{{ rehearsal.rehearsal_date|date:"d.m.Y H:i" }}</td>
+                                            <td>
+                                                <span class="badge bg-warning text-dark">
+                                                    {{ rehearsal.duration_minutes }} мин.
+                                                </span>
+                                            </td>
+                                            <td><small>{{ rehearsal.location|truncatechars:20 }}</small></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-calendar-x display-1 text-muted"></i>
+                            <h4 class="text-muted mt-3">Нет забронированных репетиций</h4>
+                            <p class="text-muted">Начните с бронирования первой репетиции</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

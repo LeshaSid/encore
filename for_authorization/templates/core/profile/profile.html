@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Мой профиль - Encore{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-person-circle"></i> Мой профиль</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center mb-4">
+                        <div class="mb-3">
+                            <i class="bi bi-person-badge display-1 text-primary"></i>
+                        </div>
+                        <h5>{{ user_profile.username }}</h5>
+                        {% if user_profile.first_name and user_profile.last_name %}
+                        <p class="text-muted">{{ user_profile.first_name }} {{ user_profile.last_name }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong><i class="bi bi-envelope"></i> Email:</strong>
+                                <p>{{ user_profile.email }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong><i class="bi bi-telephone"></i> Телефон:</strong>
+                                <p>{{ user_profile.phone|default:"Не указан" }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong><i class="bi bi-music-note"></i> Инструмент:</strong>
+                                <p>{{ user_profile.instrument|default:"Не указан" }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong><i class="bi bi-telegram"></i> Telegram:</strong>
+                                <p>{{ user_profile.telegram|default:"Не указан" }}</p>
+                            </div>
+                        </div>
+                        
+                        {% if user_profile.bio %}
+                        <div class="mb-3">
+                            <strong><i class="bi bi-file-text"></i> О себе:</strong>
+                            <p>{{ user_profile.bio }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong><i class="bi bi-calendar"></i> Дата регистрации:</strong>
+                                <p>{{ user_profile.date_joined|date:"d.m.Y" }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong><i class="bi bi-clock-history"></i> Последний вход:</strong>
+                                <p>{{ user_profile.last_login|date:"d.m.Y H:i" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'profile_edit' %}" class="btn btn-primary">
+                        <i class="bi bi-pencil"></i> Редактировать профиль
+                    </a>
+                    <a href="{% url 'change_password' %}" class="btn btn-warning">
+                        <i class="bi bi-key"></i> Сменить пароль
+                    </a>
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-house"></i> На главную
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
