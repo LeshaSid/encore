@@ -5,6 +5,7 @@ from for_authorization.views import home, custom_login, custom_logout, RegisterV
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin-panel/', include('custom_admin.urls')),
     path('book/', include('booking.urls')),
     path('concerts/', include('concertsshower.urls')),
     

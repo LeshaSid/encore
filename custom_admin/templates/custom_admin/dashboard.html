@@ -1,0 +1,23 @@
+{% extends "custom_admin/base.html" %}
+{% block admin_content %}
+<h2>Административная панель</h2>
+<div class="row mb-4">
+    <div class="col">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Панель предназначена для управления основными сущностями системы.
+        </div>
+    </div>
+</div>
+<div class="row">
+    {% for name, count in counts.items %}
+    <div class="col-md-2">
+        <div class="card text-bg-primary mb-3">
+            <div class="card-body text-center">
+                <h6 class="card-title mb-1">{{ name|capfirst }}</h6>
+                <p class="card-text display-6 mb-0">{{ count }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
