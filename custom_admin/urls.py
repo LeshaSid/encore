@@ -35,4 +35,10 @@ urlpatterns = [
     path('memberships/create/', views.membership_create, name='membership_create'),
     path('memberships/<int:pk>/edit/', views.membership_update, name='membership_update'),
     path('memberships/<int:pk>/delete/', views.membership_delete, name='membership_delete'),
+
+    # Performances (новый функционал)
+    path('performances/', views.performance_list, name='performance_list'),
+    path('performances/create/', views.performance_create, name='performance_create'),
+    path('performances/<int:pk>/edit/', views.performance_update, name='performance_update'),
+    path('performances/<int:pk>/delete/', views.performance_delete, name='performance_delete'),
 ]

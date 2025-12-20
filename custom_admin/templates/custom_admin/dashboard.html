@@ -1,23 +1,137 @@
 {% extends "custom_admin/base.html" %}
 {% block admin_content %}
-<h2>Административная панель</h2>
-<div class="row mb-4">
-    <div class="col">
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> Панель предназначена для управления основными сущностями системы.
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-speedometer2"></i> Административная панель</h2>
+    <span class="badge bg-primary">Версия 1.0</span>
+</div>
+
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> Панель предназначена для управления основными сущностями системы Encore.
+</div>
+
+<!-- Карточки статистики -->
+<div class="row mb-5">
+    <div class="col-md-2 col-sm-4 mb-3">
+        <div class="card text-bg-primary">
+            <div class="card-body text-center">
+                <i class="bi bi-people display-6 mb-2"></i>
+                <h6 class="card-title mb-1">Музыканты</h6>
+                <p class="card-text display-5 mb-0">{{ counts.musicians }}</p>
+            </div>
+            <a href="{% url 'custom_admin:musician_list' %}" class="stretched-link"></a>
+        </div>
+    </div>
+    
+    <div class="col-md-2 col-sm-4 mb-3">
+        <div class="card text-bg-success">
+            <div class="card-body text-center">
+                <i class="bi bi-music-note-beamed display-6 mb-2"></i>
+                <h6 class="card-title mb-1">Группы</h6>
+                <p class="card-text display-5 mb-0">{{ counts.bands }}</p>
+            </div>
+            <a href="{% url 'custom_admin:band_list' %}" class="stretched-link"></a>
+        </div>
+    </div>
+    
+    <div class="col-md-2 col-sm-4 mb-3">
+        <div class="card text-bg-warning">
+            <div class="card-body text-center">
+                <i class="bi bi-megaphone display-6 mb-2"></i>
+                <h6 class="card-title mb-1">Концерты</h6>
+                <p class="card-text display-5 mb-0">{{ counts.concerts }}</p>
+            </div>
+            <a href="{% url 'custom_admin:concert_list' %}" class="stretched-link"></a>
+        </div>
+    </div>
+    
+    <div class="col-md-2 col-sm-4 mb-3">
+        <div class="card text-bg-info">
+            <div class="card-body text-center">
+                <i class="bi bi-calendar-check display-6 mb-2"></i>
+                <h6 class="card-title mb-1">Репетиции</h6>
+                <p class="card-text display-5 mb-0">{{ counts.rehearsals }}</p>
+            </div>
+            <a href="{% url 'custom_admin:rehearsal_list' %}" class="stretched-link"></a>
+        </div>
+    </div>
+    
+    <div class="col-md-2 col-sm-4 mb-3">
+        <div class="card text-bg-secondary">
+            <div class="card-body text-center">
+                <i class="bi bi-person-plus display-6 mb-2"></i>
+                <h6 class="card-title mb-1">Членства</h6>
+                <p class="card-text display-5 mb-0">{{ counts.memberships }}</p>
+            </div>
+            <a href="{% url 'custom_admin:membership_list' %}" class="stretched-link"></a>
+        </div>
+    </div>
+    
+    <div class="col-md-2 col-sm-4 mb-3">
+        <div class="card text-bg-dark">
+            <div class="card-body text-center">
+                <i class="bi bi-music-note-beamed display-6 mb-2"></i>
+                <h6 class="card-title mb-1">Выступления</h6>
+                <p class="card-text display-5 mb-0">{{ counts.performances }}</p>
+            </div>
+            <a href="{% url 'custom_admin:performance_list' %}" class="stretched-link"></a>
         </div>
     </div>
 </div>
+
+<!-- Быстрые действия -->
 <div class="row">
-    {% for name, count in counts.items %}
-    <div class="col-md-2">
-        <div class="card text-bg-primary mb-3">
-            <div class="card-body text-center">
-                <h6 class="card-title mb-1">{{ name|capfirst }}</h6>
-                <p class="card-text display-6 mb-0">{{ count }}</p>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-lightning"></i> Быстрые действия</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 mb-2">
+                        <a href="{% url 'custom_admin:musician_create' %}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-person-plus"></i> Новый музыкант
+                        </a>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <a href="{% url 'custom_admin:band_create' %}" class="btn btn-outline-success w-100">
+                            <i class="bi bi-plus-circle"></i> Новая группа
+                        </a>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <a href="{% url 'custom_admin:concert_create' %}" class="btn btn-outline-warning w-100">
+                            <i class="bi bi-calendar-plus"></i> Новый концерт
+                        </a>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <a href="{% url 'custom_admin:performance_create' %}" class="btn btn-outline-info w-100">
+                            <i class="bi bi-music-note-beamed"></i> Новое выступление
+                        </a>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <a href="{% url 'custom_admin:rehearsal_create' %}" class="btn btn-outline-info w-100">
+                            <i class="bi bi-calendar-check"></i> Новая репетиция
+                        </a>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <a href="{% url 'custom_admin:membership_create' %}" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-link"></i> Новое членство
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <a href="/admin/" class="btn btn-outline-dark w-100">
+                            <i class="bi bi-gear"></i> Стандартная админка Django
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-house"></i> На главную сайта
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    {% endfor %}
 </div>
 {% endblock %}

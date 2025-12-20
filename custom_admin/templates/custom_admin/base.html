@@ -4,12 +4,48 @@
     <nav class="col-md-2 d-none d-md-block bg-light sidebar">
         <div class="position-sticky pt-3">
             <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link{% if request.resolver_match.url_name == 'dashboard' %} active{% endif %}" href="{% url 'custom_admin:dashboard' %}">Главная</a></li>
-                <li class="nav-item"><a class="nav-link{% if 'musician' in request.resolver_match.url_name %} active{% endif %}" href="{% url 'custom_admin:musician_list' %}">Музыканты</a></li>
-                <li class="nav-item"><a class="nav-link{% if 'band' in request.resolver_match.url_name %} active{% endif %}" href="{% url 'custom_admin:band_list' %}">Группы</a></li>
-                <li class="nav-item"><a class="nav-link{% if 'concert' in request.resolver_match.url_name %} active{% endif %}" href="{% url 'custom_admin:concert_list' %}">Концерты</a></li>
-                <li class="nav-item"><a class="nav-link{% if 'rehearsal' in request.resolver_match.url_name %} active{% endif %}" href="{% url 'custom_admin:rehearsal_list' %}">Репетиции</a></li>
-                <li class="nav-item"><a class="nav-link{% if 'membership' in request.resolver_match.url_name %} active{% endif %}" href="{% url 'custom_admin:membership_list' %}">Членства</a></li>
+                <li class="nav-item">
+                    <a class="nav-link{% if request.resolver_match.url_name == 'dashboard' %} active{% endif %}" 
+                       href="{% url 'custom_admin:dashboard' %}">
+                        <i class="bi bi-speedometer2"></i> Главная
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if 'musician' in request.resolver_match.url_name %} active{% endif %}" 
+                       href="{% url 'custom_admin:musician_list' %}">
+                        <i class="bi bi-person"></i> Музыканты
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if 'band' in request.resolver_match.url_name %} active{% endif %}" 
+                       href="{% url 'custom_admin:band_list' %}">
+                        <i class="bi bi-people"></i> Группы
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if 'concert' in request.resolver_match.url_name %} active{% endif %}" 
+                       href="{% url 'custom_admin:concert_list' %}">
+                        <i class="bi bi-megaphone"></i> Концерты
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if 'performance' in request.resolver_match.url_name %} active{% endif %}" 
+                       href="{% url 'custom_admin:performance_list' %}">
+                        <i class="bi bi-music-note-beamed"></i> Выступления
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if 'rehearsal' in request.resolver_match.url_name %} active{% endif %}" 
+                       href="{% url 'custom_admin:rehearsal_list' %}">
+                        <i class="bi bi-calendar-check"></i> Репетиции
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if 'membership' in request.resolver_match.url_name %} active{% endif %}" 
+                       href="{% url 'custom_admin:membership_list' %}">
+                        <i class="bi bi-person-plus"></i> Членства
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
