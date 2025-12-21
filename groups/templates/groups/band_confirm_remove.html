@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Удаление участника - Encore{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-x"></i> Удаление участника
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+                    </div>
+                    
+                    <h5 class="mb-3">Вы уверены, что хотите удалить участника из группы?</h5>
+                    
+                    <div class="alert alert-light">
+                        <p class="mb-2"><strong>Группа:</strong> {{ band.band_name }}</p>
+                        <p class="mb-0"><strong>Музыкант:</strong> {{ membership.musician }}</p>
+                        <p><strong>Инструмент:</strong> {{ membership.musician.get_instrument_display }}</p>
+                        <p><strong>Дата вступления:</strong> {{ membership.join_date|date:"d.m.Y" }}</p>
+                    </div>
+                    
+                    <p class="text-muted">
+                        <i class="bi bi-info-circle"></i>
+                        Музыкант будет удален только из состава этой группы. Его данные в системе останутся.
+                    </p>
+                    
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="bi bi-person-x"></i> Удалить из группы
+                        </button>
+                    </form>
+                    <a href="{% url 'groups:band_members' band.pk %}" class="btn btn-outline-secondary btn-lg ms-2">
+                        <i class="bi bi-x-circle"></i> Отмена
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
