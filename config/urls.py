@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin-panel/', include('custom_admin.urls')),
     path('book/', include('booking.urls')),
     path('concerts/', include('concertsshower.urls')),
+    path('groups/', include('groups.urls', namespace='groups')),
     
     path('', home, name='home'),
     path('login/', custom_login, name='login'),

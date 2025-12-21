@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Удаление группы - Encore{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Подтверждение удаления
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-trash display-1 text-danger"></i>
+                    </div>
+                    
+                    <h5 class="mb-3">Вы уверены, что хотите удалить группу?</h5>
+                    
+                    <div class="alert alert-warning">
+                        <p><strong>{{ band.band_name }}</strong></p>
+                        <p class="mb-0">
+                            Жанр: <span class="badge bg-info">{{ band.genre }}</span><br>
+                            Дата основания: {{ band.founded_date|date:"d.m.Y" }}<br>
+                            Участников: {{ band.bandmembership_set.count }}
+                        </p>
+                    </div>
+                    
+                    <p class="text-muted">
+                        <i class="bi bi-info-circle"></i>
+                        Это действие нельзя отменить. Все данные о группе и её составе будут удалены.
+                    </p>
+                    
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-trash"></i> Удалить группу
+                        </button>
+                    </form>
+                    <a href="{% url 'groups:band_list' %}" class="btn btn-outline-secondary btn-lg ms-2">
+                        <i class="bi bi-x-circle"></i> Отмена
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
