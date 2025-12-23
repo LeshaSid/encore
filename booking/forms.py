@@ -6,12 +6,12 @@ from django.forms import ModelForm, TextInput, DateTimeInput, NumberInput
 class RehearsalsForm(ModelForm):
     class Meta():
         model = Rehearsals
-        fields = ["band_id", "rehearsal_date", "duration_minutes", "location"]  # Изменено
+        fields = ["band_name", "rehearsal_date", "duration_minutes", "location"]  # Изменено
 
         widgets = {            
-            "band_id": NumberInput(attrs={
+            "band_name": NumberInput(attrs={
                 "class": "form-control",
-                "placeholder": "Enter band id"
+                "placeholder": "Enter band name"
             }), 
             "rehearsal_date": DateTimeInput(attrs={
                 "class": "form-control",
