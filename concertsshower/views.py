@@ -1,19 +1,29 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.utils import timezone
-from django.db.models import Q
-from core.models import Concert, Performance, Band
-
+from django.db.models import Prefetch
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from .models import Concert, Performance, Band
 
 def upcoming_concerts(request):
     now = timezone.now()
     
-    # Получаем концерты начиная с текущего времени
     concerts = Concert.objects.filter(
         concert_date__gte=now
-    ).order_by('concert_date')[:10]
+    ).order_by('concert_date')
+    
+    
+    page = request.GET.get('page', 1)
+    paginator = Paginator(concerts, 6)  
+    
+    try:
+        paginated_concerts = paginator.page(page)
+    except PageNotAnInteger:
+        paginated_concerts = paginator.page(1)
+    except EmptyPage:
+        paginated_concerts = paginator.page(paginator.num_pages)
     
     concerts_with_bands = []
-    for concert in concerts:
+    for concert in paginated_concerts:
         performances = Performance.objects.filter(concert=concert).select_related('band')
         bands = [performance.band for performance in performances]
         concerts_with_bands.append({
@@ -25,54 +35,64 @@ def upcoming_concerts(request):
     context = {
         'concerts_with_bands': concerts_with_bands,
         'current_time': now,
-        'now': now,
+        'paginated_concerts': paginated_concerts,  
+        'now': now,  
     }
     
     return render(request, 'concertsshower/upcoming_concerts.html', context)
 
 
 def concert_detail(request, concert_id):
-    now = timezone.now()
-    concert = get_object_or_404(Concert, concert_id=concert_id)
-    performances = Performance.objects.filter(
-        concert=concert
-    ).select_related('band').order_by('performance_order')
-    
-    context = {
-        'concert': concert,
-        'performances': performances,
-        'now': now,
-    }
-    
-    return render(request, 'concertsshower/concert_detail.html', context)
+    try:
+        concert = Concert.objects.get(concert_id=concert_id)
+        performances = Performance.objects.filter(
+            concert=concert
+        ).select_related('band').order_by('performance_order')
+        
+        context = {
+            'concert': concert,
+            'performances': performances,
+            'now': timezone.now(),  
+        }
+        
+        return render(request, 'concertsshower/concert_detail.html', context)
+    except Concert.DoesNotExist:
+        return render(request, 'concertsshower/concert_not_found.html', status=404)
 
 
 def all_concerts(request):
-    now = timezone.now()
     from_date = request.GET.get('from_date')
     to_date = request.GET.get('to_date')
     search_query = request.GET.get('search', '')
     
     concerts = Concert.objects.all()
     
-    # Применяем фильтры
     if from_date:
         concerts = concerts.filter(concert_date__gte=from_date)
     if to_date:
         concerts = concerts.filter(concert_date__lte=to_date)
     if search_query:
-        concerts = concerts.filter(
-            Q(concert_title__icontains=search_query) |
-            Q(venue_address__icontains=search_query)
-        )
+        concerts = concerts.filter(concert_title__icontains=search_query)
     
     concerts = concerts.order_by('concert_date')
     
+    
+    page = request.GET.get('page', 1)
+    paginator = Paginator(concerts, 9) 
+    
+    try:
+        paginated_concerts = paginator.page(page)
+    except PageNotAnInteger:
+        paginated_concerts = paginator.page(1)
+    except EmptyPage:
+        paginated_concerts = paginator.page(paginator.num_pages)
+    
     context = {
-        'concerts': concerts,
+        'concerts': paginated_concerts,  
         'search_query': search_query,
-        'now': now,
-        'request': request,  # Добавляем request в контекст
+        'from_date': from_date,
+        'to_date': to_date,
+        'now': timezone.now(),
     }
     
     return render(request, 'concertsshower/all_concerts.html', context)
