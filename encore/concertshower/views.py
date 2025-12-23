@@ -7,14 +7,13 @@ from .models import Concert, Performance, Band
 def upcoming_concerts(request):
     now = timezone.now()
     
-   
     concerts = Concert.objects.filter(
         concert_date__gte=now
     ).order_by('concert_date')
     
-   
+    
     page = request.GET.get('page', 1)
-    paginator = Paginator(concerts, 10)  
+    paginator = Paginator(concerts, 6)  
     
     try:
         paginated_concerts = paginator.page(page)
@@ -22,7 +21,6 @@ def upcoming_concerts(request):
         paginated_concerts = paginator.page(1)
     except EmptyPage:
         paginated_concerts = paginator.page(paginator.num_pages)
-    
     
     concerts_with_bands = []
     for concert in paginated_concerts:
@@ -38,6 +36,7 @@ def upcoming_concerts(request):
         'concerts_with_bands': concerts_with_bands,
         'current_time': now,
         'paginated_concerts': paginated_concerts,  
+        'now': now,  
     }
     
     return render(request, 'concertsshower/upcoming_concerts.html', context)
@@ -53,6 +52,7 @@ def concert_detail(request, concert_id):
         context = {
             'concert': concert,
             'performances': performances,
+            'now': timezone.now(),  
         }
         
         return render(request, 'concertsshower/concert_detail.html', context)
@@ -78,7 +78,7 @@ def all_concerts(request):
     
     
     page = request.GET.get('page', 1)
-    paginator = Paginator(concerts, 15) 
+    paginator = Paginator(concerts, 9) 
     
     try:
         paginated_concerts = paginator.page(page)
@@ -92,6 +92,7 @@ def all_concerts(request):
         'search_query': search_query,
         'from_date': from_date,
         'to_date': to_date,
+        'now': timezone.now(),
     }
     
     return render(request, 'concertsshower/all_concerts.html', context)
