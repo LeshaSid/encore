@@ -58,7 +58,6 @@ class AddMemberForm(forms.ModelForm):
         self.band = kwargs.pop('band', None)
         super().__init__(*args, **kwargs)
         if self.band:
-            # Исключаем музыкантов, уже состоящих в этой группе
             existing_members = self.band.bandmembership_set.values_list('musician_id', flat=True)
             self.fields['musician'].queryset = Musician.objects.exclude(
                 musician_id__in=existing_members
@@ -70,7 +69,6 @@ class AddMemberForm(forms.ModelForm):
         join_date = cleaned_data.get('join_date')
         
         if musician and self.band:
-            # Проверяем, не состоит ли уже музыкант в группе
             if BandMembership.objects.filter(band=self.band, musician=musician).exists():
                 raise ValidationError('Этот музыкант уже состоит в группе')
         

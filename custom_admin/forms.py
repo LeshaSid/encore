@@ -59,17 +59,14 @@ class PerformanceForm(forms.ModelForm):
         band = self.cleaned_data.get('band')
         
         if concert and band and order:
-            # Проверяем, не занят ли этот порядок другим выступлением на этом концерте
             existing = Performance.objects.filter(
                 concert=concert,
                 performance_order=order
             )
             
-            # Если редактируем существующее выступление, исключаем его из проверки
             if self.instance and self.instance.pk:
                 existing = existing.exclude(pk=self.instance.pk)
             else:
-                # Если создаем новое, проверяем, не существует ли уже такое же выступление
                 existing = existing.exclude(band=band)
             
             if existing.exists():
@@ -78,7 +75,6 @@ class PerformanceForm(forms.ModelForm):
         return order
 
 
-# Экспортируем все формы для использования в views
 __all__ = [
     'MusicianForm', 'BandForm', 'ConcertForm', 'BandMembershipForm',
     'RehearsalForm', 'PerformanceForm'

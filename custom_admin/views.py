@@ -13,7 +13,6 @@ def staff_required(user):
     return user.is_staff
 
 
-# Dashboard
 @user_passes_test(staff_required)
 def admin_dashboard(request):
     counts = {
@@ -27,7 +26,6 @@ def admin_dashboard(request):
     return render(request, 'custom_admin/dashboard.html', {'counts': counts})
 
 
-# Musicians CRUD
 @user_passes_test(staff_required)
 def musician_list(request):
     musicians = Musician.objects.all().order_by('last_name', 'first_name')
@@ -77,7 +75,6 @@ def musician_delete(request, pk):
     return render(request, 'custom_admin/musicians/confirm_delete.html', {'object': musician})
 
 
-# Bands CRUD
 @user_passes_test(staff_required)
 def band_list(request):
     bands = Band.objects.all().order_by('band_name')
@@ -127,7 +124,6 @@ def band_delete(request, pk):
     return render(request, 'custom_admin/bands/confirm_delete.html', {'object': band})
 
 
-# Concerts CRUD
 @user_passes_test(staff_required)
 def concert_list(request):
     concerts = Concert.objects.all().order_by('-concert_date')
@@ -177,7 +173,6 @@ def concert_delete(request, pk):
     return render(request, 'custom_admin/concerts/confirm_delete.html', {'object': concert})
 
 
-# Rehearsals CRUD
 @user_passes_test(staff_required)
 def rehearsal_list(request):
     rehearsals = Rehearsal.objects.select_related('band').order_by('-rehearsal_date')
@@ -227,7 +222,6 @@ def rehearsal_delete(request, pk):
     return render(request, 'custom_admin/rehearsals/confirm_delete.html', {'object': rehearsal})
 
 
-# Band Memberships CRUD
 @user_passes_test(staff_required)
 def membership_list(request):
     memberships = BandMembership.objects.select_related('musician', 'band').order_by('-join_date')
@@ -277,7 +271,6 @@ def membership_delete(request, pk):
     return render(request, 'custom_admin/membership/confirm_delete.html', {'object': membership})
 
 
-# Performances CRUD (новый функционал)
 @user_passes_test(staff_required)
 def performance_list(request):
     performances = Performance.objects.select_related('concert', 'band').order_by('concert__concert_date', 'performance_order')

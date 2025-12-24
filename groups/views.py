@@ -11,29 +11,24 @@ from .forms import BandForm, AddMemberForm
 
 @login_required
 def band_list(request):
-    """Список всех групп с поиском и фильтрацией"""
     search_query = request.GET.get('search', '')
     genre_filter = request.GET.get('genre', '')
     
     bands = Band.objects.all().order_by('band_name')
     
-    # Применяем поиск
     if search_query:
         bands = bands.filter(
             Q(band_name__icontains=search_query) |
             Q(genre__icontains=search_query)
         )
     
-    # Применяем фильтр по жанру
     if genre_filter:
         bands = bands.filter(genre=genre_filter)
     
-    # Пагинация
-    paginator = Paginator(bands, 10)  # 10 групп на страницу
+    paginator = Paginator(bands, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    # Получаем уникальные жанры для фильтра
     genres = Band.objects.values_list('genre', flat=True).distinct().order_by('genre')
     
     context = {
@@ -49,7 +44,6 @@ def band_list(request):
 
 @login_required
 def band_create(request):
-    """Создание новой группы"""
     if request.method == 'POST':
         form = BandForm(request.POST)
         if form.is_valid():
@@ -68,7 +62,6 @@ def band_create(request):
 
 @login_required
 def band_update(request, pk):
-    """Редактирование группы"""
     band = get_object_or_404(Band, pk=pk)
     
     if request.method == 'POST':
@@ -89,7 +82,6 @@ def band_update(request, pk):
 
 @login_required
 def band_delete(request, pk):
-    """Удаление группы"""
     band = get_object_or_404(Band, pk=pk)
     
     if request.method == 'POST':
@@ -103,10 +95,8 @@ def band_delete(request, pk):
 
 @login_required
 def band_members(request, pk):
-    """Управление составом группы"""
     band = get_object_or_404(Band, pk=pk)
-    
-    # Форма для добавления нового члена
+
     add_form = AddMemberForm(band=band)
     
     if request.method == 'POST' and 'add_member' in request.POST:
@@ -117,8 +107,7 @@ def band_members(request, pk):
             membership.save()
             messages.success(request, f'Музыкант добавлен в группу!')
             return redirect('groups:band_members', pk=band.pk)
-    
-    # Получаем текущих членов группы
+
     memberships = BandMembership.objects.filter(band=band).select_related('musician').order_by('-join_date')
     
     context = {
@@ -132,7 +121,6 @@ def band_members(request, pk):
 
 @login_required
 def member_remove(request, pk, member_id):
-    """Удаление музыканта из группы"""
     band = get_object_or_404(Band, pk=pk)
     membership = get_object_or_404(BandMembership, id=member_id, band=band)
     

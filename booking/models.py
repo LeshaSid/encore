@@ -1,13 +1,11 @@
-# booking/models.py
 from django.db import models
 
 
 class Rehearsals(models.Model):
-    # Используем те же имена полей, что и в core/models.py
     rehearsal_id = models.AutoField(primary_key=True, db_column='rehearsal_id')
     band_id = models.IntegerField("band id")
     rehearsal_date = models.DateTimeField("Date & time")
-    duration_minutes = models.IntegerField("Duration minutes")  # Изменено на duration_minutes
+    duration_minutes = models.IntegerField("Duration minutes")
     location = models.CharField("Location", max_length=255)
 
     class Meta():
@@ -21,7 +19,7 @@ class Rehearsals(models.Model):
 class Bands(models.Model):
     band_id = models.AutoField(primary_key=True, db_column='band_id')
     band_name = models.CharField("Band name", max_length=100)
-    genre = models.CharField("Genre", max_length=50)  # Исправлено
+    genre = models.CharField("Genre", max_length=50)
     founded_date = models.DateTimeField("Founded")
 
     class Meta():

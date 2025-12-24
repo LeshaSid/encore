@@ -36,7 +36,7 @@ urlpatterns = [
     path('memberships/<int:pk>/edit/', views.membership_update, name='membership_update'),
     path('memberships/<int:pk>/delete/', views.membership_delete, name='membership_delete'),
 
-    # Performances (новый функционал)
+    # Performances
     path('performances/', views.performance_list, name='performance_list'),
     path('performances/create/', views.performance_create, name='performance_create'),
     path('performances/<int:pk>/edit/', views.performance_update, name='performance_update'),
