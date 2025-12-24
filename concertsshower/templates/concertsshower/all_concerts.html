@@ -1,4 +1,5 @@
 {% extends 'concertsshower/base.html' %}
+{% load concert_filters %}
 
 {% block title %}Все концерты - Encore{% endblock %}
 {% block page_title %}Все концерты{% endblock %}
@@ -24,7 +25,7 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                     <input type="date" class="form-control" id="from_date" name="from_date" 
-                           value="{{ request.GET.from_date }}">
+                           value="{{ from_date }}">
                 </div>
             </div>
             <div class="col-md-3">
@@ -32,7 +33,7 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                     <input type="date" class="form-control" id="to_date" name="to_date" 
-                           value="{{ request.GET.to_date }}">
+                           value="{{ to_date }}">
                 </div>
             </div>
             <div class="col-md-2 d-flex align-items-end">
@@ -43,7 +44,7 @@
                 </div>
             </div>
             <div class="col-12">
-                {% if search_query or request.GET.from_date or request.GET.to_date %}
+                {% if search_query or from_date or to_date %}
                 <a href="{% url 'concertsshower:all_concerts' %}" class="btn btn-outline-secondary btn-sm">
                     <i class="bi bi-x-circle"></i> Сбросить фильтры
                 </a>
@@ -56,13 +57,15 @@
     </div>
 </div>
 
-<!-- Список концертов -->
 {% if concerts %}
     <div class="row mb-3">
         <div class="col">
             <div class="alert alert-light">
                 <i class="bi bi-info-circle"></i>
-                Найдено: <strong>{{ concerts|length }}</strong> концертов
+                Найдено: <strong>{{ concerts.paginator.count }}</strong> концертов
+                {% if concerts.paginator.num_pages > 1 %}
+                (показано {{ concerts.start_index }}-{{ concerts.end_index }})
+                {% endif %}
             </div>
         </div>
     </div>
@@ -128,18 +131,21 @@
         </div>
         {% endfor %}
     </div>
+    
+    {% include 'concertsshower/pagination.html' with page_obj=concerts %}
+    
 {% else %}
     <div class="text-center py-5">
         <i class="bi bi-calendar-x display-1 text-muted"></i>
         <h3 class="text-muted mt-3">Концерты не найдены</h3>
         <p class="text-muted">
-            {% if search_query or request.GET.from_date or request.GET.to_date %}
+            {% if search_query or from_date or to_date %}
                 По вашему запросу ничего не найдено. Попробуйте изменить параметры поиска.
             {% else %}
                 В системе пока нет концертов.
             {% endif %}
         </p>
-        {% if search_query or request.GET.from_date or request.GET.to_date %}
+        {% if search_query or from_date or to_date %}
         <a href="{% url 'concertsshower:all_concerts' %}" class="btn btn-primary mt-2">
             <i class="bi bi-arrow-counterclockwise"></i> Показать все концерты
         </a>
@@ -147,7 +153,6 @@
     </div>
 {% endif %}
 
-<!-- Кнопки навигации -->
 <div class="mt-5 pt-4 border-top">
     <div class="d-flex justify-content-between">
         <a href="{% url 'concertsshower:upcoming_concerts' %}" class="btn btn-outline-primary">
@@ -162,8 +167,6 @@
 
 {% block extra_js %}
 <script>
-    // Автоматически устанавливаем максимальную дату для "С даты" 
-    // и минимальную для "По дату" если они обе заполнены
     document.addEventListener('DOMContentLoaded', function() {
         const fromDateInput = document.getElementById('from_date');
         const toDateInput = document.getElementById('to_date');

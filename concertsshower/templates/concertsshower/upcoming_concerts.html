@@ -1,4 +1,5 @@
 {% extends 'concertsshower/base.html' %}
+{% load concert_filters %}
 
 {% block title %}Ближайшие концерты - Encore{% endblock %}
 {% block page_title %}Ближайшие концерты{% endblock %}
@@ -11,6 +12,18 @@
 </div>
 
 {% if concerts_with_bands %}
+    <div class="row mb-3">
+        <div class="col">
+            <div class="alert alert-light">
+                <i class="bi bi-info-circle"></i>
+                Найдено: <strong>{{ paginated_concerts.paginator.count }}</strong> ближайших концертов
+                {% if paginated_concerts.paginator.num_pages > 1 %}
+                (показано {{ paginated_concerts.start_index }}-{{ paginated_concerts.end_index }})
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for item in concerts_with_bands %}
         <div class="col">
@@ -61,6 +74,9 @@
         </div>
         {% endfor %}
     </div>
+    
+    {% include 'concertsshower/pagination.html' with page_obj=paginated_concerts %}
+    
 {% else %}
     <div class="text-center py-5">
         <i class="bi bi-calendar-x display-1 text-muted"></i>

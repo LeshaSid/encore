@@ -17,7 +17,9 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',  
     'booking.apps.BookingConfig',
     'concertsshower.apps.ConcertsshowerConfig',
-    'for_authorization.apps.ForAuthorizationConfig'
+    'for_authorization.apps.ForAuthorizationConfig',
+    'custom_admin.apps.CustomAdminConfig', 
+    'groups.apps.GroupsConfig', 
 ]
 
 AUTH_USER_MODEL = 'for_authorization.MusicianUser'

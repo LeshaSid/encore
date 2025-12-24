@@ -1,4 +1,3 @@
-# for_authorization/apps.py
 from django.apps import AppConfig
 
 

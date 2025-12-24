@@ -1,4 +1,3 @@
-# for_authorization/forms.py
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, UserCreationForm
 from django.core.exceptions import ValidationError
