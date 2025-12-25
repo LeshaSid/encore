@@ -22,9 +22,9 @@ def book(request):
             try:
                 id = ''
                 with connection.cursor() as cursor:
-                    cursor.execute(f"SELECT band_id FROM Rehearsals JOIN Bands ON Rehearsals.band_id = Bands.band_id WHERE band_name = {form.cleaned_data['band_name']}")
+                    cursor.execute(f"SELECT band FROM rehearsals JOIN Bands ON rehearsals.band = Bands.band_id WHERE band_name = {form.cleaned_data['band']}")
                     id = cursor.fetchall()[0]
-                newData = Rehearsals(band_id=id,
+                newData = Rehearsal(band=id,
                                      rehearsal_date=form.cleaned_data['rehearsal_date'],
                                      duration_minutes=form.cleaned_data['duration_minutes'],
                                      location=form.cleaned_data['location'])
