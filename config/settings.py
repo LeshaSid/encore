@@ -20,9 +20,12 @@ INSTALLED_APPS = [
     'for_authorization.apps.ForAuthorizationConfig',
     'custom_admin.apps.CustomAdminConfig', 
     'groups.apps.GroupsConfig', 
+    'update_authorization',
 ]
 
 AUTH_USER_MODEL = 'for_authorization.MusicianUser'
+
+AUTH_USER_MODEL = 'update_authorization.User'
 
 TEMPLATES = [
     {
