@@ -20,7 +20,15 @@ def book(request):
         form = RehearsalsForm(request.POST)
         if form.is_valid():
             try:
-                form.save()
+                id = ''
+                with connection.cursor() as cursor:
+                    cursor.execute(f"SELECT band_id FROM Rehearsals JOIN Bands ON Rehearsals.band_id = Bands.band_id WHERE band_name = {form.cleaned_data['band_name']}")
+                    id = cursor.fetchall()[0]
+                newData = Rehearsals(band_id=id,
+                                     rehearsal_date=form.cleaned_data['rehearsal_date'],
+                                     duration_minutes=form.cleaned_data['duration_minutes'],
+                                     location=form.cleaned_data['location'])
+                newData.save()
                 messages.success(request, "Репетиция успешно забронирована!")
                 return redirect('book')
             except Exception as e:
