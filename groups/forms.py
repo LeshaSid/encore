@@ -7,7 +7,7 @@ from core.models import Band, BandMembership, Musician
 class BandForm(forms.ModelForm):
     class Meta:
         model = Band
-        fields = ['band_name', 'genre', 'founded_date']
+        fields = ['band_name', 'genre', 'founded_date', 'logo']
         widgets = {
             'band_name': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -18,11 +18,16 @@ class BandForm(forms.ModelForm):
                 'type': 'date',
                 'class': 'form-control'
             }),
+            'logo': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
         }
         labels = {
             'band_name': 'Название группы',
             'genre': 'Жанр',
             'founded_date': 'Дата основания',
+            'logo': 'Логотип группы',
         }
     
     def clean_founded_date(self):
