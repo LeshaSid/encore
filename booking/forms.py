@@ -9,9 +9,9 @@ class RehearsalsForm(ModelForm):
         fields = ["band_id", "rehearsal_date", "duration_minutes", "location"]  # Изменено
 
         widgets = {            
-            "band_id": NumberInput(attrs={
+            "band_id": TextInput(attrs={
                 "class": "form-control",
-                "placeholder": "Enter band id"
+                "placeholder": "Enter band name"
             }), 
             "rehearsal_date": DateTimeInput(attrs={
                 "class": "form-control",
