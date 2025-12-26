@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import connection
-from core.models import Rehearsal
+from core.models import Rehearsal, Band
 from .forms import RehearsalsForm
 
 
 def book(request):
     error = ""
-    
+
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'rehearsals'")
@@ -20,7 +20,7 @@ def book(request):
         form = RehearsalsForm(request.POST)
         if form.is_valid():
             try:
-                form.save()
+                new_rehearsal = form.save()
                 messages.success(request, "Репетиция успешно забронирована!")
                 return redirect('book')
             except Exception as e:
@@ -29,11 +29,11 @@ def book(request):
         else:
             error = "Форма заполнена некорректно"
             messages.error(request, error)
+    else:
+        form = RehearsalsForm()
 
-    form = RehearsalsForm()
-    
     try:
-        rehearsals = Rehearsal.objects.all()
+        rehearsals = Rehearsal.objects.select_related('band').all()
     except Exception as e:
         rehearsals = []
         error = f"Ошибка загрузки данных: {str(e)}"

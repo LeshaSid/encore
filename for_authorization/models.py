@@ -47,6 +47,16 @@ class MusicianUser(AbstractUser):
         null=True,
         verbose_name=_('О себе')
     )
+
+    ROLE_CHOICES = (
+        ('musician', 'Musician'),
+        ('admin', 'Admin'),
+    )
+    role = models.CharField(
+        max_length=20, 
+        choices=ROLE_CHOICES, 
+        default='musician'
+    )
     
     class Meta:
         verbose_name = _('Пользователь-музыкант')
