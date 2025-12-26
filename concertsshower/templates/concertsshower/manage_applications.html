@@ -1,0 +1,119 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}Управление заявками - Encore{% endblock %}
+{% block page_title %}Управление заявками{% endblock %}
+{% block page_subtitle %}Рассмотрение заявок на участие в концертах{% endblock %}
+
+{% block concerts_content %}
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-inboxes"></i> Все заявки
+                <span class="badge bg-primary ms-2">{{ applications|length }}</span>
+            </h5>
+            <div class="btn-group" role="group">
+                <a href="?status=" class="btn btn-outline-secondary {% if not status_filter %}active{% endif %}">
+                    Все
+                </a>
+                <a href="?status=pending" class="btn btn-outline-warning {% if status_filter == 'pending' %}active{% endif %}">
+                    На рассмотрении
+                </a>
+                <a href="?status=approved" class="btn btn-outline-success {% if status_filter == 'approved' %}active{% endif %}">
+                    Одобренные
+                </a>
+                <a href="?status=rejected" class="btn btn-outline-danger {% if status_filter == 'rejected' %}active{% endif %}">
+                    Отклоненные
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if applications %}
+<div class="row">
+    {% for application in applications %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-{% if application.status == 'pending' %}warning
+                                        {% elif application.status == 'approved' %}success
+                                        {% elif application.status == 'rejected' %}danger
+                                        {% else %}secondary{% endif %}">
+                        {{ application.status|title }}
+                    </span>
+                    {% if application.concert_source == 'file' %}
+                    <span class="badge bg-info ms-1" title="Концерт добавлен через систему">
+                        <i class="bi bi-file-earmark"></i>
+                    </span>
+                    {% endif %}
+                </div>
+                <small class="text-muted">{{ application.created_at|date:"d.m.Y H:i" }}</small>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">{{ application.concert_title }}</h6>
+                <p class="mb-2">
+                    <strong>Дата концерта:</strong> {{ application.concert_date|date:"d.m.Y H:i" }}
+                </p>
+                <p class="mb-2">
+                    <strong>Группа:</strong> {{ application.band_name }}
+                </p>
+                <p class="mb-2">
+                    <strong>Музыкант:</strong> {{ application.musician_name }}
+                </p>
+                
+                {% if application.message %}
+                <div class="alert alert-light mt-3">
+                    <h6>Сообщение от музыканта:</h6>
+                    <p class="mb-0">{{ application.message }}</p>
+                </div>
+                {% endif %}
+                
+                {% if application.response_message %}
+                <div class="alert alert-info mt-3">
+                    <h6>Ответ организатора:</h6>
+                    <p class="mb-0">{{ application.response_message }}</p>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-transparent">
+                {% if application.status == 'pending' %}
+                <form method="post" action="{% url 'concertsshower:update_application_status' application.id %}" 
+                      class="d-flex gap-2 mb-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="approved">
+                    <button type="submit" class="btn btn-sm btn-success flex-grow-1">
+                        <i class="bi bi-check-lg"></i> Одобрить
+                    </button>
+                </form>
+                <form method="post" action="{% url 'concertsshower:update_application_status' application.id %}" 
+                      class="d-flex gap-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="rejected">
+                    <input type="text" name="response_message" class="form-control form-control-sm" 
+                           placeholder="Причина отказа" required>
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-inbox display-1 text-muted"></i>
+    <h3 class="text-muted mt-3">Заявки не найдены</h3>
+    <p class="text-muted">
+        {% if status_filter %}
+            Нет заявок со статусом "{{ status_filter }}"
+        {% else %}
+            Пока нет заявок на рассмотрение
+        {% endif %}
+    </p>
+</div>
+{% endif %}
+{% endblock %}

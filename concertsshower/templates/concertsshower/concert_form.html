@@ -1,0 +1,94 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}{{ title }} - Encore{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}{% if concert %}Редактирование концерта "{{ concert.concert_title }}"{% else %}Создание нового концерта{% endif %}{% endblock %}
+
+{% block concerts_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="post" id="concertForm">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Пожалуйста, исправьте ошибки ниже.
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.concert_title.id_for_label }}" class="form-label">
+                            Название концерта *
+                        </label>
+                        {{ form.concert_title }}
+                        {% if form.concert_title.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.concert_title.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.venue_address.id_for_label }}" class="form-label">
+                            Адрес проведения *
+                        </label>
+                        {{ form.venue_address }}
+                        {% if form.venue_address.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.venue_address.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.concert_date.id_for_label }}" class="form-label">
+                            Дата и время *
+                        </label>
+                        {{ form.concert_date }}
+                        {% if form.concert_date.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.concert_date.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Укажите дату и время начала концерта</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% if concert %}{% url 'concertsshower:concert_detail' concert.pk %}{% else %}{% url 'concertsshower:all_concerts' %}{% endif %}" 
+                           class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-x-circle"></i> Отмена
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Сохранить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.querySelector('input[type="datetime-local"]');
+        if (dateInput) {
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            dateInput.min = localDateTime;
+        }
+    });
+</script>
+{% endblock %}

@@ -5,6 +5,46 @@
 {% block page_subtitle %}Детальная информация о концерте{% endblock %}
 
 {% block concerts_content %}
+{% if user_role == 'organizer' and concert.source == 'file' %}
+<div class="mb-3">
+    <div class="btn-group" role="group">
+        <a href="{% url 'concertsshower:edit_concert' concert.id %}" class="btn btn-warning btn-sm">
+            <i class="bi bi-pencil"></i> Редактировать
+        </a>
+        <a href="{% url 'concertsshower:delete_concert' concert.id %}" class="btn btn-danger btn-sm">
+            <i class="bi bi-trash"></i> Удалить
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% if user_role == 'musician' and concert.concert_date > now %}
+<div class="mb-3">
+    {% if user_application %}
+        {% if user_application.status == 'pending' %}
+        <div class="alert alert-warning">
+            <i class="bi bi-clock"></i> Ваша заявка на рассмотрении
+        </div>
+        {% elif user_application.status == 'approved' %}
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle"></i> Ваша заявка одобрена!
+        </div>
+        {% elif user_application.status == 'rejected' %}
+        <div class="alert alert-danger">
+            <i class="bi bi-x-circle"></i> Ваша заявка отклонена
+            {% if user_application.response_message %}
+            <br><small>Причина: {{ user_application.response_message }}</small>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% else %}
+        <a href="{% url 'concertsshower:apply_for_concert' concert.id %}" class="btn btn-success">
+            <i class="bi bi-send"></i> Подать заявку на участие
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
 <div class="row">
     <div class="col-lg-8">
         <div class="card shadow-sm mb-4">
@@ -64,7 +104,6 @@
             </div>
         </div>
 
-
         <div class="card shadow-sm">
             <div class="card-header bg-light">
                 <h5 class="mb-0">
@@ -108,7 +147,6 @@
                                 </div>
                             </div>
                             
-                          
                             <div class="collapse mt-3" id="bandDetails{{ performance.band.band_id }}">
                                 <div class="card card-body">
                                     <h6>Информация о группе:</h6>
@@ -132,15 +170,31 @@
                 {% else %}
                     <div class="text-center py-4">
                         <i class="bi bi-music-note-list display-1 text-muted"></i>
-                        <h5 class="text-muted mt-3">Программа выступлений не определена</h5>
-                        <p class="text-muted">Информация о выступлениях будет добавлена позже</p>
+                        <h5 class="text-muted mt-3">
+                            {% if concert.source == 'db' %}
+                                Программа выступлений еще не определена
+                            {% else %}
+                                Программа выступлений не определена
+                            {% endif %}
+                        </h5>
+                        <p class="text-muted">
+                            {% if concert.source == 'db' %}
+                                Информация о выступлениях будет добавлена позже
+                            {% else %}
+                                Для концертов, добавленных через систему, программа формируется после одобрения заявок
+                            {% endif %}
+                        </p>
+                        {% if user_role == 'organizer' and concert.source == 'file' %}
+                        <a href="{% url 'concertsshower:manage_applications' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-inboxes"></i> Управление заявками
+                        </a>
+                        {% endif %}
                     </div>
                 {% endif %}
             </div>
         </div>
     </div>
 
-   
     <div class="col-lg-4">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light">
@@ -184,6 +238,13 @@
                             <span class="badge bg-warning text-dark float-end">{{ concert.concert_date|timeuntil }}</span>
                         </li>
                         {% endif %}
+                        <li class="mb-2">
+                            <i class="bi bi-database text-info"></i>
+                            Источник: 
+                            <span class="badge {% if concert.source == 'db' %}bg-primary{% else %}bg-info{% endif %} float-end">
+                                {% if concert.source == 'db' %}База данных{% else %}Система{% endif %}
+                            </span>
+                        </li>
                     </ul>
                 </div>
 
@@ -204,7 +265,28 @@
             </div>
         </div>
 
-        
+        {% if concert.source == 'file' %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Информация о концерте</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Источник:</strong> 
+                    <span class="badge bg-info">Добавлен через систему</span>
+                </p>
+                {% if concert.organizer_name %}
+                <p><strong>Добавил:</strong> {{ concert.organizer_name }}</p>
+                {% endif %}
+                {% if concert.created_at %}
+                <p><strong>Дата создания:</strong> {{ concert.created_at|date:"d.m.Y H:i" }}</p>
+                {% endif %}
+                {% if concert.updated_at %}
+                <p><strong>Последнее обновление:</strong> {{ concert.updated_at|date:"d.m.Y H:i" }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="card shadow-sm">
             <div class="card-header bg-light">
                 <h5 class="mb-0"><i class="bi bi-lightning"></i> Быстрые действия</h5>
@@ -217,6 +299,13 @@
                     <a href="{% url 'concertsshower:all_concerts' %}" class="btn btn-outline-secondary">
                         <i class="bi bi-calendar3"></i> Все концерты
                     </a>
+                    {% if user_role == 'musician' and concert.concert_date > now %}
+                        {% if not user_application %}
+                        <a href="{% url 'concertsshower:apply_for_concert' concert.id %}" class="btn btn-outline-success">
+                            <i class="bi bi-send"></i> Подать заявку
+                        </a>
+                        {% endif %}
+                    {% endif %}
                     <a href="{% url 'book' %}" class="btn btn-outline-success">
                         <i class="bi bi-calendar-plus"></i> Забронировать репетицию
                     </a>
@@ -228,7 +317,6 @@
         </div>
     </div>
 </div>
-
 
 <div class="card shadow-sm mt-4">
     <div class="card-header bg-light">
@@ -243,7 +331,7 @@
                 </p>
                 <div class="alert alert-light">
                     <i class="bi bi-info-circle"></i>
-                    Для получения точных координатов и схемы проезда обратитесь к организаторам.
+                    Для получения точных координат и схемы проезда обратитесь к организаторам.
                 </div>
             </div>
             <div class="col-md-4">
@@ -259,4 +347,35 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const infoButtons = document.querySelectorAll('[data-bs-toggle="collapse"]');
+        infoButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const target = this.getAttribute('data-bs-target');
+                const collapseElement = document.querySelector(target);
+                if (collapseElement) {
+                    const isExpanded = collapseElement.classList.contains('show');
+                    this.innerHTML = isExpanded 
+                        ? '<i class="bi bi-info-circle"></i> Подробнее'
+                        : '<i class="bi bi-x-circle"></i> Скрыть';
+                }
+            });
+        });
+        ы
+        const updateStatusForms = document.querySelectorAll('form[action*="update_application_status"]');
+        updateStatusForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitButton = this.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Обработка...';
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

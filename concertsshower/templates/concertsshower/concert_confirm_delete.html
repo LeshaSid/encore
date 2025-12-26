@@ -1,0 +1,55 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}Удаление концерта - Encore{% endblock %}
+{% block page_title %}Подтверждение удаления{% endblock %}
+{% block page_subtitle %}Вы уверены, что хотите удалить этот концерт?{% endblock %}
+
+{% block concerts_content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Внимание!</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <h6>Вы собираетесь удалить концерт:</h6>
+                    <p class="fs-5 mb-0">{{ concert.concert_title }}</p>
+                </div>
+                
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p><strong>Дата:</strong> {{ concert.concert_date|date:"d.m.Y H:i" }}</p>
+                        <p><strong>Место:</strong> {{ concert.venue_address }}</p>
+                        <p><strong>Источник:</strong> 
+                            {% if concert.source == 'db' %}
+                                Основная база данных
+                            {% else %}
+                                Добавлен через систему
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i>
+                    Это действие нельзя отменить. Концерт будет удален из системы.
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'concertsshower:concert_detail' concert.id %}" 
+                           class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-arrow-left"></i> Отмена
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Удалить концерт
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

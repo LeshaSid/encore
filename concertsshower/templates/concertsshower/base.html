@@ -7,6 +7,30 @@
                 <i class="bi bi-music-note-list"></i> {% block page_title %}{% endblock %}
             </h1>
             <p class="lead">{% block page_subtitle %}{% endblock %}</p>
+            
+        
+            {% if user.is_authenticated %}
+            <div class="d-flex align-items-center mb-3">
+                <span class="badge 
+                    {% if user_role == 'organizer' %}bg-danger
+                    {% elif user_role == 'musician' %}bg-info
+                    {% else %}bg-secondary{% endif %}">
+                    {% if user_role == 'organizer' %}Организатор
+                    {% elif user_role == 'musician' %}Музыкант
+                    {% else %}Зритель{% endif %}
+                </span>
+                {% if user_role == 'organizer' %}
+                <a href="{% url 'concertsshower:manage_applications' %}" class="btn btn-sm btn-outline-dark ms-3">
+                    <i class="bi bi-inboxes"></i> Управление заявками
+                </a>
+                {% endif %}
+                {% if user_role == 'musician' %}
+                <a href="{% url 'concertsshower:my_applications' %}" class="btn btn-sm btn-outline-dark ms-3">
+                    <i class="bi bi-inbox"></i> Мои заявки
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
     </div>
     

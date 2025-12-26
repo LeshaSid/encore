@@ -1,0 +1,86 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}Мои заявки - Encore{% endblock %}
+{% block page_title %}Мои заявки{% endblock %}
+{% block page_subtitle %}История подачи заявок на концерты{% endblock %}
+
+{% block concerts_content %}
+{% if applications %}
+<div class="row">
+    {% for application in applications %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-{% if application.status == 'pending' %}warning
+                                        {% elif application.status == 'approved' %}success
+                                        {% elif application.status == 'rejected' %}danger
+                                        {% else %}secondary{% endif %}">
+                        {{ application.status|title }}
+                    </span>
+                </div>
+                <small class="text-muted">{{ application.created_at|date:"d.m.Y" }}</small>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">{{ application.concert_title }}</h6>
+                <p class="mb-2">
+                    <i class="bi bi-calendar-event"></i>
+                    {{ application.concert_date|date:"d.m.Y H:i" }}
+                </p>
+                <p class="mb-2">
+                    <i class="bi bi-geo-alt"></i>
+                    {{ application.venue_address|default:"Адрес не указан" }}
+                </p>
+                <p class="mb-2">
+                    <i class="bi bi-people"></i>
+                    Группа: {{ application.band_name }}
+                </p>
+                
+                {% if application.message %}
+                <div class="alert alert-light mt-3">
+                    <h6>Ваше сообщение:</h6>
+                    <p class="mb-0">{{ application.message|truncatewords:30 }}</p>
+                </div>
+                {% endif %}
+                
+                {% if application.response_message %}
+                <div class="alert alert-info mt-3">
+                    <h6>Ответ организатора:</h6>
+                    <p class="mb-0">{{ application.response_message }}</p>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-transparent">
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'concertsshower:concert_detail' application.concert_id %}" 
+                       class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i> К концерту
+                    </a>
+                    
+                    {% if application.status in 'pending,approved' %}
+                    <form method="post" action="{% url 'concertsshower:cancel_application' application.id %}" 
+                          class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                onclick="return confirm('Вы уверены, что хотите отменить заявку?')">
+                            <i class="bi bi-x-circle"></i> Отменить
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-inbox display-1 text-muted"></i>
+    <h3 class="text-muted mt-3">У вас пока нет заявок</h3>
+    <p class="text-muted">Подайте заявку на участие в концерте, чтобы она отобразилась здесь</p>
+    <a href="{% url 'concertsshower:all_concerts' %}" class="btn btn-primary mt-2">
+        <i class="bi bi-search"></i> Найти концерт
+    </a>
+</div>
+{% endif %}
+{% endblock %}

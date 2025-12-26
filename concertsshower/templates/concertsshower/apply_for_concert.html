@@ -1,0 +1,92 @@
+{% extends 'concertsshower/base.html' %}
+
+{% block title %}Подача заявки - Encore{% endblock %}
+{% block page_title %}Подача заявки на участие{% endblock %}
+{% block page_subtitle %}в концерте "{{ concert_title }}"{% endblock %}
+
+{% block concerts_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Информация о концерте</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p><strong>Дата:</strong> {{ concert_date|date:"d.m.Y H:i" }}</p>
+                        <p><strong>Статус:</strong> 
+                            {% if concert_date > now %}
+                                <span class="badge bg-success">Предстоящий</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Прошедший</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Источник:</strong> 
+                            {% if concert_source == 'db' %}
+                                <span class="badge bg-primary">Основная база</span>
+                            {% else %}
+                                <span class="badge bg-info">Добавлен через систему</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.band.id_for_label }}" class="form-label">
+                            Выберите группу *
+                        </label>
+                        {{ form.band }}
+                        {% if form.band.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.band.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Выберите группу, от имени которой подается заявка
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.message.id_for_label }}" class="form-label">
+                            Сообщение для организатора *
+                        </label>
+                        {{ form.message }}
+                        {% if form.message.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.message.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Расскажите о вашей группе, репертуаре и почему вы хотите выступить на этом концерте
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        После подачи заявки организатор рассмотрит её и уведомит вас о решении
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% url 'concertsshower:concert_detail' pk %}" class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-arrow-left"></i> Назад
+                        </a>
+                        <button type="submit" class="btn btn-success" {% if not user_bands %}disabled{% endif %}>
+                            <i class="bi bi-send"></i> Подать заявку
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
