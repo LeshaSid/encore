@@ -1,75 +1,283 @@
 ﻿{% extends 'base.html' %}
 
-{% block title %}Регистрация{% endblock %}
+{% block title %}Регистрация - Encore{% endblock %}
+
+{% block extra_css %}
+<style>
+    .registration-type {
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+    }
+    .registration-type:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .registration-type.active {
+        border-color: #0d6efd;
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-10">
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Регистрация</h4>
+                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Регистрация в системе Encore</h4>
             </div>
             <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <!-- Используем правильные имена полей -->
-                    <div class="mb-3">
-                        <label class="form-label">Имя пользователя *</label>
-                        <input type="text" name="username" class="form-control" required>
+                <!-- Выбор типа регистрации -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h5 class="text-center mb-4">Выберите тип аккаунта:</h5>
                     </div>
                     
-                    <div class="mb-3">
-                        <label class="form-label">Email *</label>
-                        <input type="email" name="email" class="form-control" required>
+                    <div class="col-md-3 mb-3">
+                        <a href="?type=viewer" class="text-decoration-none">
+                            <div class="card registration-type text-center h-100 {% if form_type == 'viewer' %}active{% endif %}" 
+                                 data-type="viewer">
+                                <div class="card-body">
+                                    <i class="bi bi-person display-4 text-primary mb-3"></i>
+                                    <h5 class="card-title">Зритель</h5>
+                                    <p class="card-text small">Просмотр концертов, бронирование билетов</p>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                     
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Имя</label>
-                            <input type="text" name="first_name" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Фамилия</label>
-                            <input type="text" name="last_name" class="form-control">
-                        </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="?type=musician" class="text-decoration-none">
+                            <div class="card registration-type text-center h-100 {% if form_type == 'musician' %}active{% endif %}" 
+                                 data-type="musician">
+                                <div class="card-body">
+                                    <i class="bi bi-music-note-beamed display-4 text-success mb-3"></i>
+                                    <h5 class="card-title">Музыкант</h5>
+                                    <p class="card-text small">Участие в группах, репетиции, выступления</p>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                     
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Телефон</label>
-                            <input type="text" name="phone" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Инструмент</label>
-                            <input type="text" name="instrument" class="form-control">
-                        </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="?type=manager" class="text-decoration-none">
+                            <div class="card registration-type text-center h-100 {% if form_type == 'manager' %}active{% endif %}" 
+                                 data-type="manager">
+                                <div class="card-body">
+                                    <i class="bi bi-people display-4 text-warning mb-3"></i>
+                                    <h5 class="card-title">Менеджер</h5>
+                                    <p class="card-text small">Управление группами, организация выступлений</p>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                     
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Пароль *</label>
-                            <input type="password" name="password1" class="form-control" required>
-                            <small class="text-muted">Минимум 8 символов</small>
+                    <div class="col-md-3 mb-3">
+                        <a href="?type=venue_owner" class="text-decoration-none">
+                            <div class="card registration-type text-center h-100 {% if form_type == 'venue_owner' %}active{% endif %}" 
+                                 data-type="venue_owner">
+                                <div class="card-body">
+                                    <i class="bi bi-building display-4 text-info mb-3"></i>
+                                    <h5 class="card-title">Владелец площадки</h5>
+                                    <p class="card-text small">Размещение площадок для концертов</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Форма регистрации -->
+                <div id="formContainer">
+                    <form method="post" id="registrationForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="{{ form_type }}">
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Общие поля для всех форм -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Имя пользователя *</label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                <div class="text-danger">{{ form.username.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email *</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                <div class="text-danger">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
                         
-                        <div class="col-md-6">
-                            <label class="form-label">Подтверждение пароля *</label>
-                            <input type="password" name="password2" class="form-control" required>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Пароль *</label>
+                                {{ form.password1 }}
+                                <small class="text-muted">Минимум 8 символов</small>
+                                {% if form.password1.errors %}
+                                <div class="text-danger">{{ form.password1.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Подтверждение пароля *</label>
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                <div class="text-danger">{{ form.password2.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="bi bi-person-plus"></i> Зарегистрироваться
-                        </button>
-                    </div>
-                </form>
+
+                        <!-- Поля для музыканта/менеджера -->
+                        {% if form_type == 'musician' or form_type == 'manager' %}
+                            <hr class="my-4">
+                            <h5 class="mb-3">Информация о музыканте</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Имя *</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                    <div class="text-danger">{{ form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Фамилия *</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                    <div class="text-danger">{{ form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Телефон *</label>
+                                    {{ form.phone }}
+                                    <small class="text-muted">Формат: +375XXXXXXXXX</small>
+                                    {% if form.phone.errors %}
+                                    <div class="text-danger">{{ form.phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Инструмент *</label>
+                                    {{ form.instrument }}
+                                    {% if form.instrument.errors %}
+                                    <div class="text-danger">{{ form.instrument.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Telegram</label>
+                                    {{ form.telegram }}
+                                    <small class="text-muted">Начинается с @</small>
+                                    {% if form.telegram.errors %}
+                                    <div class="text-danger">{{ form.telegram.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if show_manager_checkbox %}
+                                <div class="col-md-6">
+                                    <div class="form-check mt-4 pt-3">
+                                        {{ form.is_manager }}
+                                        <label class="form-check-label" for="{{ form.is_manager.id_for_label }}">
+                                            Я менеджер группы
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Поля для владельца площадки -->
+                        {% if form_type == 'venue_owner' %}
+                            <hr class="my-4">
+                            <h5 class="mb-3">Информация о площадке</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Имя *</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                    <div class="text-danger">{{ form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Фамилия *</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                    <div class="text-danger">{{ form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Телефон *</label>
+                                    {{ form.phone }}
+                                    <small class="text-muted">Формат: +375XXXXXXXXX</small>
+                                    {% if form.phone.errors %}
+                                    <div class="text-danger">{{ form.phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Telegram</label>
+                                    {{ form.telegram }}
+                                    <small class="text-muted">Начинается с @</small>
+                                    {% if form.telegram.errors %}
+                                    <div class="text-danger">{{ form.telegram.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Название площадки *</label>
+                                    {{ form.venue_name }}
+                                    {% if form.venue_name.errors %}
+                                    <div class="text-danger">{{ form.venue_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Адрес площадки *</label>
+                                    {{ form.venue_address }}
+                                    {% if form.venue_address.errors %}
+                                    <div class="text-danger">{{ form.venue_address.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <hr class="my-4">
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-person-plus"></i> Зарегистрироваться
+                            </button>
+                        </div>
+                    </form>
+                </div>
                 
                 <hr class="my-4">
                 
                 <div class="text-center">
                     <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войдите</a></p>
+                    <p class="small text-muted">
+                        <i class="bi bi-info-circle"></i>
+                        Зрителям доступен просмотр концертов и бронирование билетов.<br>
+                        Музыкантам и менеджерам доступны все функции системы.
+                    </p>
                 </div>
             </div>
         </div>

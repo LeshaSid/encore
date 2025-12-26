@@ -8,7 +8,13 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import MusicianUser
-from .forms import MusicianUserCreationForm, MusicianUserUpdateForm, MusicianAuthenticationForm
+from .forms import (
+    MusicianAuthenticationForm, 
+    MusicianUserUpdateForm,
+    ViewerRegistrationForm,
+    MusicianRegistrationForm,
+    VenueOwnerRegistrationForm
+)
 
 def home(request):
     return render(request, 'core/home.html')
@@ -43,22 +49,70 @@ def custom_logout(request):
     messages.info(request, 'Вы успешно вышли из системы.')
     return redirect('home')
 
+def register_view(request):
+    """Простое функциональное представление для регистрации"""
+    if request.user.is_authenticated:
+        return redirect('home')
+    
+    form_type = request.GET.get('type', 'viewer')
+    form = None
+    
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type', form_type)
+        
+        if form_type == 'musician' or form_type == 'manager':
+            form = MusicianRegistrationForm(request.POST)
+            if form_type == 'manager':
+                # Для менеджера устанавливаем чекбокс
+                form.data = form.data.copy()
+                form.data['is_manager'] = 'on'
+        elif form_type == 'venue_owner':
+            form = VenueOwnerRegistrationForm(request.POST)
+        else:
+            form = ViewerRegistrationForm(request.POST)
+        
+        if form.is_valid():
+            user = form.save()
+            
+            # Автоматически логиним пользователя
+            login(request, user)
+            
+            # Сообщение об успешной регистрации
+            role_display = dict(MusicianUser.ROLE_CHOICES).get(user.role, user.role)
+            messages.success(request, f'Регистрация прошла успешно! Вы зарегистрированы как {role_display}.')
+            return redirect('home')
+        else:
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
+            # Для отладки
+            print("Form errors:", form.errors)
+    else:
+        if form_type == 'musician':
+            form = MusicianRegistrationForm()
+        elif form_type == 'manager':
+            form = MusicianRegistrationForm()
+        elif form_type == 'venue_owner':
+            form = VenueOwnerRegistrationForm()
+        else:
+            form = ViewerRegistrationForm()
+    
+    return render(request, 'core/registration/register.html', {
+        'form': form,
+        'form_type': form_type,
+        'role_choices': MusicianUser.ROLE_CHOICES,
+        'show_manager_checkbox': form_type == 'manager'
+    })
+
+# Альтернатива: классное представление (более простое)
 class RegisterView(CreateView):
-    form_class = MusicianUserCreationForm
+    model = MusicianUser
     template_name = 'core/registration/register.html'
     success_url = reverse_lazy('home')
-    
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        user = form.save()
-        login(self.request, user)
-        messages.success(self.request, f'Регистрация прошла успешно! Добро пожаловать, {user.username}!')
-        return response
     
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect('home')
-        return super().dispatch(request, *args, **kwargs)
+        # Используем функциональное представление для простоты
+        return register_view(request)
 
 class ProfileView(LoginRequiredMixin, DetailView):
     model = MusicianUser

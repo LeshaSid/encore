@@ -1,28 +1,28 @@
-from core.models import Rehearsal
-from django.forms import ModelForm, TextInput, DateTimeInput, NumberInput
-
+from core.models import Rehearsal, Band
+from django import forms
+from django.forms import ModelForm, TextInput, DateTimeInput, Select
 
 class RehearsalsForm(ModelForm):
-    class Meta():
+    class Meta:
         model = Rehearsal
         fields = ["band", "rehearsal_date", "duration_minutes", "location"]
-
-        widgets = {            
-            "band": NumberInput(attrs={
+        widgets = {
+            "band": Select(attrs={
                 "class": "form-control",
-                "placeholder": "Enter band name"
-            }), 
+                "placeholder": "Выберите группу"
+            }),
             "rehearsal_date": DateTimeInput(attrs={
                 "class": "form-control",
-                "placeholder": "Enter date",
+                "placeholder": "Выберите дату и время",
                 "type": "datetime-local"
             }),
-            "duration_minutes": NumberInput(attrs={
+            "duration_minutes": forms.NumberInput(attrs={
                 "class": "form-control",
-                "placeholder": "Enter duration in minutes"
+                "placeholder": "Введите продолжительность в минутах",
+                "min": 15
             }),
             "location": TextInput(attrs={
                 "class": "form-control",
-                "placeholder": "Enter location"
+                "placeholder": "Введите место проведения"
             })
         }
