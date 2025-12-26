@@ -5,11 +5,8 @@ from django.db.models import Q
 from .models import Concert, Performance
 
 def upcoming_concerts(request):
-    """Отображение только предстоящих концертов"""
-    # Используем timezone.now() для корректного учета времени сервера
     now = timezone.now()
     
-    # Фильтруем концерты: дата больше или равна текущей
     concerts = Concert.objects.filter(
         concert_date__gte=now
     ).order_by('concert_date')
@@ -21,7 +18,6 @@ def upcoming_concerts(request):
     return render(request, 'concertsshower/upcoming_concerts.html', context)
 
 def all_concerts(request):
-    """Архив всех концертов с фильтрацией и поиском"""
     now = timezone.now()
     search_query = request.GET.get('search', '')
     from_date = request.GET.get('from_date')
@@ -55,9 +51,7 @@ def all_concerts(request):
     return render(request, 'concertsshower/all_concerts.html', context)
 
 def concert_detail(request, pk):
-    """Детальная информация о концерте (исправлен аргумент pk)"""
     concert = get_object_or_404(Concert, pk=pk)
-    # Предзагрузка групп для оптимизации запросов
     performances = concert.performances.all().select_related('band').order_by('performance_order')
     
     context = {

@@ -7,8 +7,7 @@ from .forms import RehearsalsForm
 
 def book(request):
     error = ""
-    
-    # Проверка структуры таблицы (для отладки)
+
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'rehearsals'")
@@ -21,7 +20,6 @@ def book(request):
         form = RehearsalsForm(request.POST)
         if form.is_valid():
             try:
-                # Сохраняем репетицию - band уже является объектом Band
                 new_rehearsal = form.save()
                 messages.success(request, "Репетиция успешно забронирована!")
                 return redirect('book')
@@ -34,7 +32,6 @@ def book(request):
     else:
         form = RehearsalsForm()
 
-    # Загружаем репетиции с информацией о группах
     try:
         rehearsals = Rehearsal.objects.select_related('band').all()
     except Exception as e:

@@ -13,7 +13,7 @@ class MusicianForm(forms.ModelForm):
         phone = self.cleaned_data.get('phone')
         if not phone.startswith('+375'):
             raise ValidationError('Phone must start with +375')
-        if len(phone) != 13:  # +375 + 9 digits
+        if len(phone) != 13:
             raise ValidationError('Phone must be 13 characters long')
         return phone
     
