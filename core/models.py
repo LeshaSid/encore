@@ -84,6 +84,8 @@ class Band(models.Model):
     band_name = models.CharField(max_length=100)
     genre = models.CharField(max_length=50, choices=GENRE_CHOICES)
     founded_date = models.DateField(default=timezone.now)
+    # Поле для логотипа
+    logo = models.ImageField(upload_to='band_logos/', blank=True, null=True, verbose_name='Логотип')
     
     class Meta:
         db_table = 'bands'
